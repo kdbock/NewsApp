@@ -1,3 +1,11 @@
+//
+//  BaseRSSFeedViewController.swift
+//  NewsApp
+//
+//  Created by Kristy Kelly on 3/8/25.
+//  (Consolidated for demonstration)
+//
+
 import UIKit
 
 // MARK: - Base View Controller for RSS Feed Sections
@@ -73,4 +81,3 @@ class BaseRSSFeedViewController: UIViewController {
         ])
     }
 }
-

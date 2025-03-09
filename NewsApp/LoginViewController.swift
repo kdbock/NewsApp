@@ -39,7 +39,8 @@ class LoginViewController: UIViewController {
     private let forgotPasswordButton: UIButton = {
         let button = UIButton(type: .system)
         button.setTitle("Forgot Password?", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
+        // Change link color to gold
+        button.setTitleColor(BrandColors.gold, for: .normal)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
@@ -54,31 +55,73 @@ class LoginViewController: UIViewController {
         return button
     }()
     
-    // 1) Admin Login Button
-    private let adminLoginButton: UIButton = {
+    // Social Login Buttons
+    
+    private let googleSignInButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Admin Login", for: .normal)
+        button.setTitle("Continue with Google", for: .normal)
         button.setTitleColor(.white, for: .normal)
-        button.backgroundColor = .systemRed // or BrandColors.darkGray
+        button.backgroundColor = .systemRed // Google brand color (approx)
         button.layer.cornerRadius = 5
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
-    // 2) Register Button
-    private let registerButton: UIButton = {
+    private let appleSignInButton: UIButton = {
         let button = UIButton(type: .system)
-        button.setTitle("Register", for: .normal)
-        button.setTitleColor(.systemBlue, for: .normal)
+        button.setTitle("Continue with Apple", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.backgroundColor = .black // Apple brand color
+        button.layer.cornerRadius = 5
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
     
+    private let facebookSignInButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Continue with Facebook", for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        // Typical Facebook brand color
+        button.backgroundColor = UIColor(red: 59/255, green: 89/255, blue: 152/255, alpha: 1)
+        button.layer.cornerRadius = 5
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    private let registerButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Register", for: .normal)
+        // Change link color to gold
+        button.setTitleColor(BrandColors.gold, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        return button
+    }()
+    
+    // Ad space placeholder
+    private let adContainerView: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    // Label for the “Hyper-local news...” text
+    private let localNewsLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Hyper-local news with no pop-up ads, no AP news and no online subscription fees. No kidding!"
+        label.textAlignment = .center
+        label.numberOfLines = 0
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+
     // MARK: - Lifecycle
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Login"
+        
+        // Remove the default navigation bar title if needed
+        // title = "Login" // commented out
+        
         view.backgroundColor = .white
         
         // Add subviews
@@ -87,15 +130,26 @@ class LoginViewController: UIViewController {
         view.addSubview(passwordField)
         view.addSubview(forgotPasswordButton)
         view.addSubview(loginButton)
-        view.addSubview(adminLoginButton)
+        
+        // Social logins
+        view.addSubview(googleSignInButton)
+        view.addSubview(appleSignInButton)
+        view.addSubview(facebookSignInButton)
+        
         view.addSubview(registerButton)
+        view.addSubview(adContainerView)
+        view.addSubview(localNewsLabel)
         
         setupConstraints()
         
         // Button targets
         forgotPasswordButton.addTarget(self, action: #selector(didTapForgotPassword), for: .touchUpInside)
         loginButton.addTarget(self, action: #selector(didTapLogin), for: .touchUpInside)
-        adminLoginButton.addTarget(self, action: #selector(didTapAdminLogin), for: .touchUpInside)
+        
+        googleSignInButton.addTarget(self, action: #selector(didTapGoogleSignIn), for: .touchUpInside)
+        appleSignInButton.addTarget(self, action: #selector(didTapAppleSignIn), for: .touchUpInside)
+        facebookSignInButton.addTarget(self, action: #selector(didTapFacebookSignIn), for: .touchUpInside)
+        
         registerButton.addTarget(self, action: #selector(didTapRegister), for: .touchUpInside)
     }
     
@@ -131,15 +185,39 @@ class LoginViewController: UIViewController {
             loginButton.widthAnchor.constraint(equalToConstant: 120),
             loginButton.heightAnchor.constraint(equalToConstant: 44),
             
-            // Admin Login Button (below login button)
-            adminLoginButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 12),
-            adminLoginButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            adminLoginButton.widthAnchor.constraint(equalToConstant: 120),
-            adminLoginButton.heightAnchor.constraint(equalToConstant: 44),
+            // Google Sign-In Button
+            googleSignInButton.topAnchor.constraint(equalTo: loginButton.bottomAnchor, constant: 12),
+            googleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            googleSignInButton.widthAnchor.constraint(equalToConstant: 240),
+            googleSignInButton.heightAnchor.constraint(equalToConstant: 44),
             
-            // Register Button (below admin button)
-            registerButton.topAnchor.constraint(equalTo: adminLoginButton.bottomAnchor, constant: 12),
-            registerButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            // Apple Sign-In Button
+            appleSignInButton.topAnchor.constraint(equalTo: googleSignInButton.bottomAnchor, constant: 12),
+            appleSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            appleSignInButton.widthAnchor.constraint(equalToConstant: 240),
+            appleSignInButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            // Facebook Sign-In Button
+            facebookSignInButton.topAnchor.constraint(equalTo: appleSignInButton.bottomAnchor, constant: 12),
+            facebookSignInButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            facebookSignInButton.widthAnchor.constraint(equalToConstant: 240),
+            facebookSignInButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            // Register Button
+            registerButton.topAnchor.constraint(equalTo: facebookSignInButton.bottomAnchor, constant: 12),
+            registerButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            
+            // Ad container (placeholder)
+            adContainerView.topAnchor.constraint(equalTo: registerButton.bottomAnchor, constant: 20),
+            adContainerView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            adContainerView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
+            adContainerView.heightAnchor.constraint(equalToConstant: 10),
+            
+            // “Hyper-local news...” label
+            localNewsLabel.topAnchor.constraint(equalTo: adContainerView.bottomAnchor, constant: 20),
+            localNewsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            localNewsLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 40),
+            localNewsLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -40),
         ])
     }
     
@@ -150,7 +228,6 @@ class LoginViewController: UIViewController {
         navigationController?.pushViewController(forgotVC, animated: true)
     }
     
-    // Normal user login
     @objc private func didTapLogin() {
         guard
             let email = emailField.text, !email.isEmpty,
@@ -173,28 +250,27 @@ class LoginViewController: UIViewController {
         }
     }
     
-    // 1) Admin Login
-    @objc private func didTapAdminLogin() {
-        // Hardcoded admin credentials (for testing)
-        let adminEmail = "admin@example.com"
-        let adminPassword = "AdminPassword123"  // Make sure this user exists in Firebase
-
-        Auth.auth().signIn(withEmail: adminEmail, password: adminPassword) { [weak self] authResult, error in
-            guard let strongSelf = self else { return }
-            if let error = error {
-                strongSelf.showAlert("Admin Login Failed", error.localizedDescription)
-            } else {
-                // Maybe load an Admin-specific screen or same tab bar with more privileges
-                let tabBarVC = MainTabBarController()
-                strongSelf.navigationController?.pushViewController(tabBarVC, animated: true)
-            }
-        }
+    @objc private func didTapGoogleSignIn() {
+        // TODO: Implement Google sign-in
+        // e.g. using Firebase GoogleAuthProvider and GoogleSignIn SDK
+        print("Google Sign-In tapped")
     }
     
-    // 2) Register a new account
+    @objc private func didTapAppleSignIn() {
+        // TODO: Implement Apple sign-in
+        // e.g. using Firebase OAuthProvider or ASAuthorizationController
+        print("Apple Sign-In tapped")
+    }
+    
+    @objc private func didTapFacebookSignIn() {
+        // TODO: Implement Facebook sign-in
+        // e.g. using Firebase FacebookAuthProvider and FBSDKLoginKit
+        print("Facebook Sign-In tapped")
+    }
+    
     @objc private func didTapRegister() {
-        // Navigate to a Register screen. You can create a RegisterViewController for new user sign-up.
-        let registerVC = RegisterViewController()  // This is a placeholder class you'll define
+        // Navigate to a Register screen
+        let registerVC = RegisterViewController()
         navigationController?.pushViewController(registerVC, animated: true)
     }
     

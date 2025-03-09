@@ -1,10 +1,25 @@
 //
+//  RSSItem.swift
+//  NewsApp
+//
+//  Created by Kristy Kelly on 3/8/25.
+//
+
+
+//
 //  RSSFeedViewController.swift
 //  NewsApp
 //
 
 import UIKit
 import SafariServices
+
+struct RSSItem {
+    let title: String
+    let link: String
+    let description: String
+    let imageURL: String?
+}
 
 class RSSFeedViewController: UIViewController {
 
@@ -49,13 +64,11 @@ class RSSFeedViewController: UIViewController {
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            // Header at top
             headerView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
             headerView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             headerView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             headerView.heightAnchor.constraint(equalToConstant: 100), // 2 rows * 50 each
             
-            // Table below header
             tableView.topAnchor.constraint(equalTo: headerView.bottomAnchor),
             tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
@@ -88,23 +101,22 @@ extension RSSFeedViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard
-            let cell = tableView.dequeueReusableCell(withIdentifier: "RSSItemCell", for: indexPath) as? RSSItemCell
-        else {
+
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "RSSItemCell", for: indexPath) as? RSSItemCell else {
             return UITableViewCell()
         }
         
         let item = items[indexPath.row]
         cell.configure(with: item)
         
-        // Open article link whenever user taps image, title, or "Read More"
-        cell.openArticleAction = { [weak self] in
+        // "Read More" action
+        cell.readMoreAction = { [weak self] in
             guard let link = URL(string: item.link) else { return }
             let safariVC = SFSafariViewController(url: link)
-            self?.present(safariVC, animated: true)
+            self?.present(safariVC, animated: true, completion: nil)
         }
         
-        // Share action
+        // "Share" action
         cell.shareAction = { [weak self] in
             let textToShare = "\(item.title) - \(item.link)"
             let activityVC = UIActivityViewController(activityItems: [textToShare], applicationActivities: nil)
@@ -116,15 +128,13 @@ extension RSSFeedViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        // Optionally, open link when row is tapped
-        // But you specifically said only image, title, read more
-        // so we can leave row tap with no action
     }
 }
 
 // MARK: - HeaderViewDelegate
 extension RSSFeedViewController: HeaderViewDelegate {
     func didSelectNewsCategory(url: String) {
+        // Show that category's RSS feed
         let categoryVC = RSSFeedViewController(feedURL: url, title: "Category")
         navigationController?.pushViewController(categoryVC, animated: true)
     }
@@ -137,11 +147,9 @@ extension RSSFeedViewController: HeaderViewDelegate {
     
     func didSelectProfileOption(option: String) {
         // Handle "Profile", "Edit Profile", "Bookmarks"
+        // For now, just show an alert
         let alert = UIAlertController(title: "Selected: \(option)", message: nil, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
         present(alert, animated: true)
     }
-    
-    // If your HeaderViewDelegate includes didTapSearch(), implement it:
-    // func didTapSearch() { ... }
 }
